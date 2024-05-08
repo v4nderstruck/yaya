@@ -1,0 +1,67 @@
+interface ethernet-1/1 {
+  subinterface 0 {
+    ipv4 {
+      admin-state enable
+      address 10.0.1.2/24 {
+      }
+    }
+    ipv6 {
+      admin-state enable
+      address 2001::10:0:1:2/112 {
+      }
+    }
+  }
+}
+
+interface ethernet-1/2 {
+  subinterface 0 {
+    ipv4 {
+      admin-state enable
+      address 10.100.1.1/24 {
+      }
+    }
+    ipv6 {
+      admin-state enable
+      address 2001::10:100:1:1/112 {
+      }
+    }
+  }
+}
+
+routing-policy {
+  policy all {
+    default-action {
+      policy-result accept
+    }
+  }
+}
+
+network-instance default {
+  interface ethernet-1/1.0 {
+  }
+  interface ethernet-1/2.0 {
+  }
+
+  protocols {
+    bgp {
+      router-id 10.0.1.2
+      autonomous-system 65001
+
+      afi-safi ipv4-unicast {
+        admin-state enable
+      }
+      afi-safi ipv6-unicast {
+        admin-state enable
+      }
+
+      group internal {
+        export-policy all
+        import-policy all
+        peer-as 65001
+      }
+      neighbor 10.0.1.1 {
+        peer-group internal
+      }
+    }
+  }
+}

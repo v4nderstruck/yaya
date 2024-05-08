@@ -1,0 +1,37 @@
+name: wan
+
+topology:
+  kinds:
+    nokia_srlinux:
+      image: ghcr.io/nokia/srlinux
+    linux:
+      image: ghcr.io/hellt/network-multitool
+  nodes:
+    # Site 1
+    gateway-1:
+      kind: nokia_srlinux
+      startup-config: ./wan-config/gateway-1.cli
+    router-1:
+      kind: nokia_srlinux
+      startup-config: ./wan-config/router-1.cli
+    client-1:
+      kind: linux
+    # Site 2
+    gateway-2:
+      kind: nokia_srlinux
+      startup-config: ./wan-config/gateway-2.cli
+    router-2:
+      kind: nokia_srlinux
+      startup-config: ./wan-config/router-2.cli
+    client-2:
+      kind: linux
+
+  links:
+    # WAN interface
+    - endpoints: ["gateway-1:e1-1", "gateway-2:e1-1"]
+    # LAN Routers
+    - endpoints: ["gateway-1:e1-2", "router-1:e1-1"]
+    - endpoints: ["gateway-2:e1-2", "router-2:e1-1"]
+    # Clients
+    - endpoints: ["router-1:e1-2", "client-1:e1-1"]
+    - endpoints: ["router-2:e1-2", "client-2:e1-1"]
